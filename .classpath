@@ -7,5 +7,6 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="PatterenPrograms"/>
+	<classpathentry kind="src" path="Selenium"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
