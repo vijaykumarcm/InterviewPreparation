@@ -1,0 +1,665 @@
+
+
+1. Explain what REST Assured is.
+
+>> REST Assured is a Java library that offers programmers a domain-specific language (DSL) to write maintainable, robust tests for RESTful APIs. It is widely used to test web applications based on JSON and XML. Additionally, it supports all methods, including GET, DELETE, PUT, POST, and PATCH.
+
+2. And what is REST?
+
+>> REST is an acronym for "representational state transfer." It's a design pattern or architectural style for APIs. A RESTful web application reveals information about itself as resource information.
+
+3. And what is JSON?
+
+>> It is a text-based standard used to describe structured data based on JavaScript object syntax. JSON is frequently used in web applications to send data to clients and servers.
+
+4. Which protocol does RESTful Web Services use?
+
+>> RESTful web services use the HTTP protocol to communicate between the client and the server.
+
+5. Define “client-server architecture.”
+
+>> The client-server architectural model defines how a server allocates resources and services to one or more clients. Server examples include web servers, mail servers, and file servers. So, the server carries out the request when the client requests a resource.
+
+6. Define a resource in REST.
+
+>> The REST architecture treats any content as a resource. This content includes HTML pages, text files, images, videos, or dynamic business information. A REST Server gives users access to these resources and modifies them, and URIs or global IDs identify each resource.
+
+7. Explain REST Assured method chaining.
+
+>> In the context of object-oriented programming languages, method chaining is an often-used syntax for invoking any number of method calls. Each method returns an object, so multiple calls can be chained together in a single line. This characteristic means that variables aren’t needed to hold interim results.
+
+8. Why would a programmer use REST Assured to automate RESTful services instead of Postman?
+
+>> Because REST Assured can customize reports, Postman can't do this. Additionally, since REST Assured is a Java client, you can reuse code, which Postman doesn’t allow. Finally, REST Assured has no restrictions on data file submission for collections, whereas Postman is limited to one data file.
+
+9. What is the request specification?
+
+>> Request specification in REST Assured is used to group common request specs and change them into a single object. This interface has the means to define the base URL, headers, base path, and other parameters. You must use the given() function of the REST Assured class to obtain a reference for the Request specification.
+
+======================================
+
+10. How do you initiate request specification in REST Assured?
+
+>> Here is the syntax:
+RequestSpecification reqSpec = RestAssured.given();
+reqSpec.baseUri("http://localhost:8080")
+eqSpec.basePath("/employees");
+
+======================================
+
+11. How do you perform chaining in REST Assured?
+
+>> In the context of object-oriented programming languages, method chaining is used to invoke multiple method calls. Each method returns an object, which allows multiple calls to be chained into a single line that doesn’t require variables to hold interim results.
+
+In REST Assured, it looks like this:
+given()
+
+           .baseUri(baseUri)
+
+           .queryParam(parameterName, parameterValues)
+
+           .accept(contentType).
+
+           .when()
+
+           .then();
+           
+======================================
+
+12. Write a code that tests REST API using REST Assured.
+
+Here’s the solution:
+
+import org.testng.annotations.Test;
+
+import io.restassured.RestAssured;
+
+import io.restassured.http.Method;
+
+import io.restassured.response.Response;
+
+import io.restassured.specification.RequestSpecification;
+
+public class EmployeesTest {
+
+    @Test
+
+    public void GetAllEmoloyees()
+
+    {
+
+           // base URL to call
+
+           RestAssured.baseURI = "http://localhost:8080/employees/get"; 
+
+           //Provide HTTP method type - GET, and URL to get all employees
+
+           //This will give respose
+
+           Response employeesResponse = RestAssured.given().request(Method.GET, "/all"); 
+
+           // Print the response in string format
+
+    System.out.println(employeesResponse.getBody().asString());
+
+ 
+
+    }
+
+}
+
+===========================================
+
+13. When using REST Assured, what’s the best method of keeping sensitive data out of the log?
+
+Use a blacklist to prevent sensitive data from appearing in the log. Here’s how:
+
+Set<String> headers = new HashSet<String>();
+
+headers.add("X-REGION");
+
+headers.add("content-type");
+
+given().
+
+baseUri("http://localhost:8080").
+
+header("X-REGION", "NAM").
+
+// blacklist headers
+
+config(
+
+config.logConfig(LogConfig.logConfig().blacklistHeaders(headers)))
+
+// blacklist multiple headers
+
+//config(config().logConfig(LogConfig.logConfig().blacklistHeader("Accept","set-cookie"))).
+
+log().all().
+
+when().
+
+get("/employees").
+
+then().
+
+assertThat().
+
+statusCode(200);
+
+==============================================
+
+14. What is a jsonPath in the context of REST Assured?
+
+A JsonPath (io.restassured.path.json.JsonPath) is an easy way to get values from an Object document without resorting to XPath. It conforms to the Groovy GPath syntax when it retrieves an object from a document. Consider it a JSON-specific version of XPath. Here’s an example:
+
+{ "company": {
+
+   "employee": [
+
+{ "id": 1,
+
+   "name": "TechGeekNextUser1",
+
+   "role": "Admin"
+
+},
+
+{ "id": 2,
+
+   "name": "TechGeekNextUser2",
+
+   "role": "User"
+
+},
+
+{ "id": 3,
+
+   "name": "TechGeekNextUser3",
+
+   "role": "User"
+
+}
+
+  ]
+
+  }
+
+ }
+
+Response employeesResponse = RestAssured.given().request(Method.GET, "/all");
+
+JsonPath jsonPathObj = employeesResponse.jsonPath();
+
+//get a list of all employees id:
+
+List<String> employeeIds = jsonPathObj.get("company.employee.id");
+
+//get the first employee name:
+
+String empName = jsonPathObj.get("company.employee[0].name");
+
+============================================
+
+15. How do you log a request and response in case REST Assured fails a validation?
+
+If the test validation fails, log().ifValidationFails() will log everything in a request and response.
+
+/**
+
+  * Log the request and response details if validation fails.
+
+  */
+
+@Test
+
+public void testIfValidationFails() {
+
+     given().
+
+     baseUri("http://localhost:8080").
+
+     header("X-REGION", "NAM").
+
+     log().ifValidationFails().
+
+     when().
+
+     get("/employees").
+
+     then().
+
+     log().ifValidationFails().
+
+     assertThat().
+
+     statusCode(200);
+
+}
+
+=========================================
+
+16. How do you use a REST Assured jsonPath to find all employee IDs between 15 and 300?
+
+Like this:
+
+Response employeesResponse = RestAssured.given().request(Method.GET, "/all");
+
+JsonPath jsonPathObj = employeesResponse.jsonPath();
+
+//get all employees id between 15 and 300
+
+List<Map> employees = jsonPathObj.get("company.employee
+
+                .findAll { employee -> employee.id >= 15 && employee.id <= 300 }");
+                
+========================================
+
+17. What is static import and why would you use it in REST Assured?
+
+The phrase “rest assured” is typically used as another way of saying “relax and don’t worry,” as in “I know you’re upset that someone stole your lunch from the break room, but rest assured we will catch the culprit and make them pay the ultimate price for their crime.” However, the phrase takes on a very different meaning in Java programming.
+
+For starters, it's rendered as REST Assured because REST is an acronym for representational state transfer. It's a design pattern or architectural style for APIs. A RESTful web application reveals information about itself as resource information. So, when a RESTful API is called, the server transfers a representation of the requested resource's state to the client.
+
+How to Prepare for Your Rest Assured Interview
+Consider the following steps when preparing for your REST Assured interview. In fact, these tips can apply to any IT-related interview!
+
+Do Your Research
+Research the company you’re interviewing with and the position you’re applying for. What role will you be expected to assume in the company’s structure?
+
+Examine the Job Description Carefully
+Then, if necessary, reread the job description, carefully noting the best candidate's expected qualifications, background, and qualities.
+
+Brush Up on Answers to the Most Likely Questions
+But, of course, you got this one already since you're here!
+
+Prepare Your Questions to Ask
+Interviews are not one-sided; you will have questions, too! So, list the things you want to know about the position or company and get ready to ask them..
+
+Do a Practice Interview
+Recruit a friend to help you role-play through an interview.
+
+Prepare Yourself With Examples
+If you have any work related to the position, organize it and bring it with you.
+
+Use the STAR Method Whenever You Can
+STAR stands for the Situation, Task, Action, and Result. STAR is a structured method of answering interview questions and ensures that you will cover each facet of the problem. It’s wise to have an organized, consistent structure to your answers, and the STAR method is one of the better ways to keep you focused.
+
+Become a Software Development Professional
+Full Stack Java Developer Masters Program
+Full Stack Java Developer Masters Program
+Kickstart Full Stack Java Developer career with industry-aligned curriculum by experts
+Hands-on practice through 20+ projects, assessments, and tests
+7 months
+View Program
+Full Stack Developer - MERN Stack Masters Program
+Full Stack Developer - MERN Stack Masters Program
+40+ micro skilling exercises & 6+ work-like professional projects
+Develop expertise in 10+ full stack development tools and frameworks
+6 Months
+View Program
+Here's what learners are saying regarding our programs:
+Jonathan Mabiala
+Jonathan Mabiala
+Java Software Developer, Desjardins
+I chose to upskill after moving from the United States to Canada in 2019. My journey in programming began during engineering, but I lost touch after college. Realizing I needed certification to advance, I enrolled in Simplilearn. The live classes boosted my confidence, allowing me to transition to a Java Software Developer role.
+
+Mayur Kharad
+Mayur Kharad
+Product Engineer, IKS Health
+During the lockdown, I realized I needed to upskill myself, and my journey with Simplilearn has been fantastic. I learned many things during the full stack java developer course, thanks to trainer Virendra Sharma. I've always wanted to work in this sector, and after completing my certification in Fullstack Java Development, I got placed at IKS Health through Simplilearn.
+
+Not sure what you’re looking for?View all Related Programs
+A Word About Virtual Interviews 
+Our post-pandemic world has made remote meetings via tools like Skype and Zoom common. But it would be best if you treated virtual interviews in the same way you would deal with an in-person interview. Be early, make sure your hardware and software work, and dress nicely, as if you were face to face with the interviewer; don't let the fact that you're at home lull you into an overly casual appearance and demeanor. You don't want an interviewer to think that you are a slob. On the other hand, looking sharp and professional (which includes making sure your space is clean and well-lit!) creates a great first impression and shows the interviewer that you're serious about the position, regardless of where you are.
+
+Now, about those REST Assured questions…
+
+Rest Assured Interview Questions and Answers
+1. Explain what REST Assured is.
+REST Assured is a Java library that offers programmers a domain-specific language (DSL) to write maintainable, robust tests for RESTful APIs. It is widely used to test web applications based on JSON and XML. Additionally, it supports all methods, including GET, DELETE, PUT, POST, and PATCH.
+
+2. And what is REST?
+REST is an acronym for "representational state transfer." It's a design pattern or architectural style for APIs. A RESTful web application reveals information about itself as resource information.
+
+3. And what is JSON?
+It is a text-based standard used to describe structured data based on JavaScript object syntax. JSON is frequently used in web applications to send data to clients and servers.
+
+4. Which protocol does RESTful Web Services use?
+RESTful web services use the HTTP protocol to communicate between the client and the server.
+
+5. Define “client-server architecture.”
+The client-server architectural model defines how a server allocates resources and services to one or more clients. Server examples include web servers, mail servers, and file servers. So, the server carries out the request when the client requests a resource.
+
+6. Define a resource in REST.
+The REST architecture treats any content as a resource. This content includes HTML pages, text files, images, videos, or dynamic business information. A REST Server gives users access to these resources and modifies them, and URIs or global IDs identify each resource.
+
+7. Explain REST Assured method chaining.
+In the context of object-oriented programming languages, method chaining is an often-used syntax for invoking any number of method calls. Each method returns an object, so multiple calls can be chained together in a single line. This characteristic means that variables aren’t needed to hold interim results.
+
+8. Why would a programmer use REST Assured to automate RESTful services instead of Postman?
+Because REST Assured can customize reports, Postman can't do this. Additionally, since REST Assured is a Java client, you can reuse code, which Postman doesn’t allow. Finally, REST Assured has no restrictions on data file submission for collections, whereas Postman is limited to one data file.
+
+9. What is the request specification?
+Request specification in REST Assured is used to group common request specs and change them into a single object. This interface has the means to define the base URL, headers, base path, and other parameters. You must use the given() function of the REST Assured class to obtain a reference for the Request specification.
+
+Become a Software Development Professional
+Full Stack Java Developer Masters Program
+Full Stack Java Developer Masters Program
+Kickstart Full Stack Java Developer career with industry-aligned curriculum by experts
+Hands-on practice through 20+ projects, assessments, and tests
+7 months
+View Program
+Full Stack Developer - MERN Stack Masters Program
+Full Stack Developer - MERN Stack Masters Program
+40+ micro skilling exercises & 6+ work-like professional projects
+Develop expertise in 10+ full stack development tools and frameworks
+6 Months
+View Program
+Here's what learners are saying regarding our programs:
+Jonathan Mabiala
+Jonathan Mabiala
+Java Software Developer, Desjardins
+I chose to upskill after moving from the United States to Canada in 2019. My journey in programming began during engineering, but I lost touch after college. Realizing I needed certification to advance, I enrolled in Simplilearn. The live classes boosted my confidence, allowing me to transition to a Java Software Developer role.
+
+Mayur Kharad
+Mayur Kharad
+Product Engineer, IKS Health
+During the lockdown, I realized I needed to upskill myself, and my journey with Simplilearn has been fantastic. I learned many things during the full stack java developer course, thanks to trainer Virendra Sharma. I've always wanted to work in this sector, and after completing my certification in Fullstack Java Development, I got placed at IKS Health through Simplilearn.
+
+Not sure what you’re looking for?View all Related Programs
+10. How do you initiate request specification in REST Assured?
+Here is the syntax:
+
+RequestSpecification reqSpec = RestAssured.given();
+
+reqSpec.baseUri("http://localhost:8080")
+
+reqSpec.basePath("/employees");
+
+All codes courtesy of Techgeek.
+
+11. How do you perform chaining in REST Assured?
+In the context of object-oriented programming languages, method chaining is used to invoke multiple method calls. Each method returns an object, which allows multiple calls to be chained into a single line that doesn’t require variables to hold interim results.
+
+In REST Assured, it looks like this:
+
+    given()
+
+           .baseUri(baseUri)
+
+           .queryParam(parameterName, parameterValues)
+
+           .accept(contentType).
+
+           .when()
+
+           .then();
+
+12. Write a code that tests REST API using REST Assured.
+Here’s the solution:
+
+import org.testng.annotations.Test;
+
+import io.restassured.RestAssured;
+
+import io.restassured.http.Method;
+
+import io.restassured.response.Response;
+
+import io.restassured.specification.RequestSpecification;
+
+public class EmployeesTest {
+
+    @Test
+
+    public void GetAllEmoloyees()
+
+    {
+
+           // base URL to call
+
+           RestAssured.baseURI = "http://localhost:8080/employees/get"; 
+
+           //Provide HTTP method type - GET, and URL to get all employees
+
+           //This will give respose
+
+           Response employeesResponse = RestAssured.given().request(Method.GET, "/all"); 
+
+           // Print the response in string format
+
+    System.out.println(employeesResponse.getBody().asString());
+
+ 
+
+    }
+
+}
+
+13. When using REST Assured, what’s the best method of keeping sensitive data out of the log?
+Use a blacklist to prevent sensitive data from appearing in the log. Here’s how:
+
+Set<String> headers = new HashSet<String>();
+
+headers.add("X-REGION");
+
+headers.add("content-type");
+
+given().
+
+baseUri("http://localhost:8080").
+
+header("X-REGION", "NAM").
+
+// blacklist headers
+
+config(
+
+config.logConfig(LogConfig.logConfig().blacklistHeaders(headers)))
+
+// blacklist multiple headers
+
+//config(config().logConfig(LogConfig.logConfig().blacklistHeader("Accept","set-cookie"))).
+
+log().all().
+
+when().
+
+get("/employees").
+
+then().
+
+assertThat().
+
+statusCode(200);
+
+14. What is a jsonPath in the context of REST Assured?
+A JsonPath (io.restassured.path.json.JsonPath) is an easy way to get values from an Object document without resorting to XPath. It conforms to the Groovy GPath syntax when it retrieves an object from a document. Consider it a JSON-specific version of XPath. Here’s an example:
+
+{ "company": {
+
+   "employee": [
+
+{ "id": 1,
+
+   "name": "TechGeekNextUser1",
+
+   "role": "Admin"
+
+},
+
+{ "id": 2,
+
+   "name": "TechGeekNextUser2",
+
+   "role": "User"
+
+},
+
+{ "id": 3,
+
+   "name": "TechGeekNextUser3",
+
+   "role": "User"
+
+}
+
+  ]
+
+  }
+
+ }
+
+Response employeesResponse = RestAssured.given().request(Method.GET, "/all");
+
+JsonPath jsonPathObj = employeesResponse.jsonPath();
+
+//get a list of all employees id:
+
+List<String> employeeIds = jsonPathObj.get("company.employee.id");
+
+//get the first employee name:
+
+String empName = jsonPathObj.get("company.employee[0].name");
+
+Become a Software Development Professional
+Full Stack Java Developer Masters Program
+Full Stack Java Developer Masters Program
+Kickstart Full Stack Java Developer career with industry-aligned curriculum by experts
+Hands-on practice through 20+ projects, assessments, and tests
+7 months
+View Program
+Full Stack Developer - MERN Stack Masters Program
+Full Stack Developer - MERN Stack Masters Program
+40+ micro skilling exercises & 6+ work-like professional projects
+Develop expertise in 10+ full stack development tools and frameworks
+6 Months
+View Program
+Here's what learners are saying regarding our programs:
+Jonathan Mabiala
+Jonathan Mabiala
+Java Software Developer, Desjardins
+I chose to upskill after moving from the United States to Canada in 2019. My journey in programming began during engineering, but I lost touch after college. Realizing I needed certification to advance, I enrolled in Simplilearn. The live classes boosted my confidence, allowing me to transition to a Java Software Developer role.
+
+Mayur Kharad
+Mayur Kharad
+Product Engineer, IKS Health
+During the lockdown, I realized I needed to upskill myself, and my journey with Simplilearn has been fantastic. I learned many things during the full stack java developer course, thanks to trainer Virendra Sharma. I've always wanted to work in this sector, and after completing my certification in Fullstack Java Development, I got placed at IKS Health through Simplilearn.
+
+Not sure what you’re looking for?View all Related Programs
+15. How do you log a request and response in case REST Assured fails a validation?
+If the test validation fails, log().ifValidationFails() will log everything in a request and response.
+
+/**
+
+  * Log the request and response details if validation fails.
+
+  */
+
+@Test
+
+public void testIfValidationFails() {
+
+     given().
+
+     baseUri("http://localhost:8080").
+
+     header("X-REGION", "NAM").
+
+     log().ifValidationFails().
+
+     when().
+
+     get("/employees").
+
+     then().
+
+     log().ifValidationFails().
+
+     assertThat().
+
+     statusCode(200);
+
+}
+
+16. How do you use a REST Assured jsonPath to find all employee IDs between 15 and 300?
+Like this:
+
+Response employeesResponse = RestAssured.given().request(Method.GET, "/all");
+
+JsonPath jsonPathObj = employeesResponse.jsonPath();
+
+//get all employees id between 15 and 300
+
+List<Map> employees = jsonPathObj.get("company.employee
+
+                .findAll { employee -> employee.id >= 15 && employee.id <= 300 }");
+
+17. What is static import and why would you use it in REST Assured?
+Static import is a Java programming language function that lets members (e.g., fields and methods) scoped as public static within their container class to be employed in Java code without mentioning the field's defined class.
+
+package com.techgeeknext.controller;
+
+import org.testng.annotations.Test;
+
+/**
+
+ * this is static import to avoid writing
+
+ * into front of every method call of RestAssured
+
+ */
+
+import static io.restassured.RestAssured.*;
+
+public class EmpControllerTest {
+
+    @Test
+
+    public void testGetEmployees() {
+
+           // with static import
+
+           given();
+
+           // without static import
+
+           /**
+
+           *  import io.restassured.RestAssured;
+
+           *  RestAssured.given();
+
+           */ 
+
+    }
+
+}
+
+=================================================
+
+18. What are serialization and deserialization in the context of Java?
+
+>> Serialization is defined as the process of changing an object's state into a byte stream. On the other hand, deserialization is the process of recreating the Java object in memory using the byte stream. This approach keeps the object alive.
+
+=================================================
+
+19. List the core components of an HTTP request.
+
+An HTTP request consists of five elements:
+
+An action (DELETE, GET, POST). This element shows HTTP methods.
+A Uniform Resource Identifier (URI). This element identifies the resource on the server.
+The HTTP version.
+A request header. This element carries the metadata for the message. The metadata could be a format supported by the client, message body format, browser or client type, cache settings, etc.
+Request body. This element indicates the resource representation or message content.
+
+=================================================
+
+20. Can a GET request be used to create a resource instead of PUT?
+
+>> Use the GET option because it has view-only rights. The POST or PUT methods should never be used to create a resource.
+
+=================================================
