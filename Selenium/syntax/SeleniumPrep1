@@ -1,0 +1,276 @@
+
+
+1. What methods are used to handle alerts and pop-ups in Selenium?
+
+Alert alert = driver.switchTo().alert();
+System.out.println("Alert Text: " + alert.getText());
+alert.accept();
+alert.dismiss()
+alert.sendKeys(String text)
+
+=================================================
+2. What steps are followed to execute drag-and-drop operations in Selenium?
+
+WebElement sourceElement = driver.findElement(By.id("draggable"));
+WebElement targetElement = driver.findElement(By.id("droppable"));
+Actions actions = new Actions(driver);
+actions.dragAndDrop(sourceElement, targetElement).perform();
+
+---------------------
+
+WebElement sourceElement = driver.findElement(By.id("draggable"));
+WebElement targetElement = driver.findElement(By.id("droppable"));
+Actions actions = new Actions(driver);
+actions.clickAndHold(sourceElement) 
+               .moveToElement(targetElement) 
+               .release(targetElement)       
+               .build().perform();   
+
+=================================================
+3. FindElement and FindElements
+
+WebElement button = driver.findElement(By.id("submitButton"));
+
+List<WebElement> links = driver.findElements(By.tagName("a"));
+
+for (WebElement link : links) {
+            System.out.println(link.getText());
+        }
+        
+=================================================
+4.What approach is used to handle frames in Selenium?
+
+// Switch to the first frame (index 0)
+        driver.switchTo().frame(0);
+        
+// Switch back to the default content (main page)
+        driver.switchTo().defaultContent();
+        
+// Switch to the frame by its name or ID
+        driver.switchTo().frame("frameNameOrId");
+        
+// Switch to the frame using the WebElement
+        driver.switchTo().frame(frameElement);
+        
+// Switch to the parent frame (the frame that contains the current frame)
+        driver.switchTo().parentFrame();
+        
+=================================================
+5.What is the procedure for taking a screenshot in Selenium?                        
+
+// Take screenshot and store it in a File object
+            TakesScreenshot screenshot = (TakesScreenshot) driver;
+            File sourceFile = screenshot.getScreenshotAs(OutputType.FILE);
+            
+// Specify the location to save the screenshot
+            File destinationFile = new File("screenshot.png");
+            
+// Copy the screenshot to the destination path
+            FileUtils.copyFile(sourceFile, destinationFile);
+            
+------------------------------
+	
+// Locate a specific element
+            WebElement element = driver.findElement(By.id("elementID"));
+            
+ // Take screenshot of the element
+            File sourceFile = element.getScreenshotAs(OutputType.FILE);
+            
+// Specify the location to save the screenshot
+            File destinationFile = new File("element_screenshot.png");
+            
+// Copy the screenshot to the destination path
+            FileUtils.copyFile(sourceFile, destinationFile);
+            
+=================================================
+6.Explain the use of the Actions class in Selenium.                                                                                    
+
+Actions actions = new Actions(driver);
+WebElement hoverElement = driver.findElement(By.id("hoverElementId"));
+actions.moveToElement(hoverElement).perform();
+
+actions.click(clickElement).perform();
+
+actions.dragAndDrop(sourceElement, targetElement).perform();
+
+// Send text to the input field
+        actions.sendKeys(inputField, "Hello, World!").perform();
+        
+// Simulate pressing the ENTER key
+        actions.sendKeys(Keys.ENTER).perform();
+        
+// Simulate pressing Ctrl+A (select all)
+        actions.keyDown(Keys.CONTROL)
+               .sendKeys("a")
+               .keyUp(Keys.CONTROL)
+               .perform();        
+        
+=================================================
+7.What techniques are used to handle dropdowns in Selenium?
+
+// Create an instance of the Select class
+        Select dropdown = new Select(dropdownElement);
+        
+// Select by visible text
+        dropdown.selectByVisibleText("Option Text");
+        
+// Select by index (0-based)
+        dropdown.selectByIndex(2);
+        
+// Select by value attribute
+        dropdown.selectByValue("optionValue");
+        
+-------------------------------------
+Methods of the Select Class:
+
+selectByVisibleText(String text): Selects the option by its visible text.
+selectByIndex(int index): Selects the option by its index (0-based).
+selectByValue(String value): Selects the option by its value attribute.
+deselectByVisibleText(String text): Deselects an option by its visible text (for multi-select dropdowns).
+deselectByIndex(int index): Deselects an option by its index (for multi-select dropdowns).
+deselectByValue(String value): Deselects an option by its value (for multi-select dropdowns).
+getAllSelectedOptions(): Returns a list of all selected options.
+getOptions(): Returns a list of all options in the dropdown.        
+        
+=================================================                                              
+8.What method can be used to verify the text present on a web page using Selenium?
+
+ // Get the actual text from the element
+        String actualText = textElement.getText();
+
+        // Define the expected text
+        String expectedText = "Welcome to Example.com";
+
+        // Verify if the actual text matches the expected text
+        if (actualText.equals(expectedText)) {
+            System.out.println("Text verification passed!");
+        } else {
+            System.out.println("Text verification failed. Expected: " + expectedText + ", but found: " + actualText);
+        }
+        
+=================================================
+9.What options are available to manage cookies in Selenium?
+ 
+ // Create a cookie
+        Cookie cookie = new Cookie("username", "testuser");
+ 
+ // Add the cookie to the browser
+        driver.manage().addCookie(cookie);
+ 
+ // Get all cookies
+        Set<Cookie> allCookies = driver.manage().getCookies();
+        
+// Print all cookies
+        for (Cookie cookie : allCookies) {
+            System.out.println(cookie.getName() + " = " + cookie.getValue());
+        }
+        
+ // Delete all cookies
+        driver.manage().deleteAllCookies();        
+        
+-------------------------------------------------      
+        
+// Get a specific cookie by name
+        Cookie cookie = driver.manage().getCookieNamed("username");
+
+        // Print cookie details
+        if (cookie != null) {
+            System.out.println("Cookie Name: " + cookie.getName());
+            System.out.println("Cookie Value: " + cookie.getValue());
+        } else {
+            System.out.println("Cookie not found.");
+        }
+        
+-----------------------------------------
+// Add a cookie
+        Cookie cookie = new Cookie("username", "testuser");
+        driver.manage().addCookie(cookie);
+
+        // Delete the cookie
+        driver.manage().deleteCookieNamed("username");
+
+        // Verify if the cookie is deleted
+        Cookie deletedCookie = driver.manage().getCookieNamed("username");
+        if (deletedCookie == null) {
+            System.out.println("Cookie deleted successfully.");
+        } else {
+            System.out.println("Cookie still exists: " + deletedCookie.getName());
+        }
+
+=================================================
+10.What is the method to find broken links on a webpage using Selenium?
+
+// Find all the links on the webpage
+        List<WebElement> links = driver.findElements(By.tagName("a"));
+        
+// Iterate through each link
+        for (WebElement link : links) {
+            // Get the href attribute of the link
+            String url = link.getAttribute("href");
+            
+            if (url != null && !url.isEmpty()) {
+                // Check the status of the URL
+                checkLinkStatus(url);
+            }
+        }
+
+public static void checkLinkStatus(String url) throws IOException {
+
+ // Create a URL object
+        URL link = new URL(url);
+        
+        // Open a connection to the URL
+        HttpURLConnection connection = (HttpURLConnection) link.openConnection();
+        
+        // Set the request method to "GET"
+        connection.setRequestMethod("GET");
+        
+        // Set a timeout for the connection
+        connection.setConnectTimeout(5000); // 5 seconds
+        
+        // Get the response code
+        int responseCode = connection.getResponseCode();
+        
+        // Check if the link is broken (response code 404 or other error codes)
+        if (responseCode >= 400) {
+            System.out.println("Broken link: " + url + " (Response code: " + responseCode + ")");
+        } else {
+            System.out.println("Valid link: " + url + " (Response code: " + responseCode + ")");
+        }
+        }
+        
+=================================================
+11. How are file uploads handled in Selenium?        
+
+WebElement uploadElement = driver.findElement(By.id(“upload”));
+uploadElement.sendKeys(“C:\\path\\to\\file.txt”);
+
+=================================================   
+12. What methods are available to handle web tables in Selenium?  
+           
+WebElement table = driver.findElement(By.id(“tableId”));
+List rows = table.find elements(By.tagName(“tr”));
+for (WebElement row: rows) {
+List cells = row.find elements(By.tagName(“TD”));
+for (WebElement cell: cells) {
+System.out.println(cell.getText());
+}
+}
+=================================================
+13.Describe how JavaScriptExecutor is used in Selenium.
+
+JavascriptExecutor js = (JavascriptExecutor) driver;
+js.executeScript(“window.scroll(0,1000)”);
+
+=================================================
+14.What techniques are used to deal with dynamic elements in Selenium?
+
+WebDriverWait wait = new WebDriverWait(driver, 10);
+WebElement dynamic element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(“dynamicElementId”)));
+
+=================================================
+15.Explain the use of the Robot class in Selenium.
+
+
+=================================================
+                               
